@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style> 
+    .box {
+        box-sizing: border-box;
+    } 
+    .column {
+    float: left;
+    width: 70%;
+    font-size: 20px;
+    }
+
+    .row:after {
+    content: "";
+    display: table;
+    clear: both;
+    height: 100px;
+    font-size: 20px;
+    }
+    .button{
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4caf50;
+        color: white;
+        text-decoration: none;
+    }
+    </style>
+    <script>
+        function validateEmail(email) {
+            const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return regex.test(email);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const signButton = document.querySelector('.button');
+            const emailInput = document.querySelector('#email');
+
+            signButton.addEventListener('click', function() {
+                if (validateEmail(emailInput.value)) {
+                    alert('Thank you for signing the petition!');
+
+                    // Send form data to server
+                    const formData = new FormData();
+                    formData.append('name', document.getElementById('name').value);
+                    formData.append('email', document.getElementById('email').value);
+                    formData.append('comments', document.getElementById('Comments').value);
+
+                    fetch('/sign', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(signatures => {
+                        const signaturesList = document.getElementById('signatures');
+                        signaturesList.innerHTML = ''; // Clears the existing signatures
+                        signatures.forEach(signature => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = signature;
+                            signaturesList.appendChild(listItem);
+                        });
+                    });
+                } else {
+                    alert('Please enter a valid email address.');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="signature-collect"></div>
+    <div class="box">
+    <div class="row">
+        <div class="column" style="background-color: white;">
+            <h1>Move CPTS 489 to the Evening</h1>
+            <h2> <font color="orange"> 661 people have signed this petition. Add your name now! </font> </h2>
+            <img src="download.png" alt="WSU logo" align="left" padding="100px">
+
+            <p>We, the undersigned members of the CPTS 489 course community, respectfully request the consideration 
+                of moving the class schedule from its current 8 AM time slot to the evening hours. As committed students 
+                passionate about our academic pursuits, we believe that relocating the course to the evening will facilitate
+                greater attendance and participation among our peers. The early morning timing poses significant challenges 
+                for many students, including those with long commutes, work commitments, or other academic obligations, 
+                limiting their ability to fully engage with the course material and contribute meaningfully to class discussions.
+                By movingCPTS 489 to the evening, we aim to foster a more inclusive and accessible learning environment that 
+                accommodates the diverse needs and schedules of our student body. This adjustment would not only enhance the 
+                overall learning experience but also promote student success and academic excellence within the program. 
+                We urge the administration and relevant stakeholders to consider our petition and collaborate with the 
+                student body to implement this change, thereby ensuring that every student has the opportunity to 
+                thrive and excel in their educational endeavors.</p>        
+        </div>
+
+        <div id="column" style="background-color:lightblue;"> <h2>Sign this Petition!</h2> 
+            <form action="add_signature.php" method="post" onsubmit="return validateEmail();" > 
+
+            <label for="name">Name:</label> 
+            <input type="text" id="name" name="name" required><br>
+            
+            <label for="email">Email:</label> 
+            <input type="text" id="email" name="email" required><br>
+            
+            <label for="comment">Comments:</label>
+            <textarea type="text" id="Comments" name="Comments" rows="4" cols="50"></textarea><br>
+            
+            <button type="button" class="button">Sign Petition</button>
+        </form>
+        <h2> Submitted Names</h2>
+        <ul id="signatures"></ul>
+        <form action="/sign" method="post"></form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
